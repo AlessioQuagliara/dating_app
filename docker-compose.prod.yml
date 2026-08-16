@@ -1,0 +1,45 @@
+# Deploy sulla VPS, accanto a linkbay-cms.
+#
+# Spiegazione semplice: questo file NON apre nessuna porta 80/443 sulla
+# macchina (sono già di Traefik, che gestisce linkbay-cms). L'app qui dentro
+# si collega alla stessa rete Docker dove gira Traefik ("linkbay-cms_default")
+# e si presenta con delle "etichette" (labels): è Traefik stesso ad
+# accorgersi da solo di questo nuovo container e a instradargli il traffico
+# del dominio scelto, senza bisogno di riavviare né toccare linkbay-cms.
+#
+# L'app usa SQLite (nessun database separato): tutti i dati vivono nel
+# volume "bubapp_data", montato su /app/data.
+#
+# Uso:
+#   docker compose -p bubapp -f docker-compose.prod.yml --env-file .env.production up -d --build
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        env_file:
+            - .env.production
+        networks:
+            - traefik
+        volumes:
+            - bubapp_data:/app/data
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=linkbay-cms_default"
+            - "traefik.http.routers.bubapp.rule=Host(`${BUBAPP_DOMAIN}`)"
+            - "traefik.http.routers.bubapp.entrypoints=websecure"
+            - "traefik.http.routers.bubapp.tls=true"
+            - "traefik.http.routers.bubapp.tls.certresolver=le-http"
+            - "traefik.http.services.bubapp.loadbalancer.server.port=8000"
+
+networks:
+    # Rete GIÀ ESISTENTE, creata da linkbay-cms: qui giriamo solo il traffico
+    # verso Traefik, non tocchiamo né vediamo i container di linkbay-cms.
+    traefik:
+        external: true
+        name: linkbay-cms_default
+
+volumes:
+    bubapp_data:
