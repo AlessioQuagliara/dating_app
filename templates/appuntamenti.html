@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Bubapp - Appuntamenti{% endblock %}
+
+{% block content %}
+
+<div class="p-6 max-w-2xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-bold">I nostri appuntamenti</h1>
+    <button class="btn btn-primary btn-sm" onclick="my_modal_2.showModal()">
+      <i class="ri-add-line"></i> Nuovo
+    </button>
+  </div>
+
+  <ul class="flex flex-col gap-3 {{ '' if events else 'hidden' }}" id="events-list">
+    {% for e in events %}
+    <li
+      class="event-row card card-side bg-base-100 border border-base-300 shadow-sm p-4 flex-row items-center gap-4 cursor-pointer {{ 'opacity-50' if e.is_past }}"
+      data-id="{{ e.id }}"
+      data-activity="{{ e.activity }}"
+      data-icon="{{ e.icon }}"
+      data-date="{{ e.event_date_it }}"
+      data-past="{{ 'true' if e.is_past else 'false' }}"
+    >
+      <input type="checkbox" class="checkbox checkbox-success" {{ 'checked' if e.is_past }} disabled />
+      <i class="{{ e.icon }} text-3xl text-pink-500"></i>
+      <div class="flex-1">
+        <p class="font-semibold {{ 'line-through' if e.is_past }}">{{ e.activity }}</p>
+        <p class="text-sm opacity-70">{{ e.event_date_it }}</p>
+      </div>
+      <i class="ri-arrow-right-s-line text-xl opacity-40"></i>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="text-center opacity-60 py-16 {{ 'hidden' if events }}" id="events-empty">
+    <i class="ri-calendar-line text-5xl"></i>
+    <p class="mt-2">Nessun appuntamento ancora. Chiedi a Bubu di uscire! 🦔</p>
+  </div>
+</div>
+
+{% include 'partials/modal_nuovo_evento.html' %}
+{% include 'partials/modal_evento.html' %}
+
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='vendor/cally/cally.js') }}"></script>
+<script src="{{ url_for('static', filename='js/wizard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/appuntamenti.js') }}"></script>
+{% endblock %}

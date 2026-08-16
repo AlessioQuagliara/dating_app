@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+    <title>{% block title %}Bubapp{% endblock %}</title>
+    <link href="{{ url_for('static', filename='css/daisyui.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+<body class="pb-20">
+
+<!--      MENU TELEFONO      -->
+{% include 'partials/menu.html' %}
+<!--      MENU TELEFONO      -->
+
+{% block content %}{% endblock %}
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

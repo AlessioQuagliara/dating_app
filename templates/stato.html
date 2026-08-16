@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Bubapp - Stato Riccio{% endblock %}
+
+{% block content %}
+
+<div class="p-6 max-w-md mx-auto flex flex-col items-center justify-center min-h-dvh">
+  <h1 class="text-3xl font-bold mb-2">Stato del riccio</h1>
+  <p class="opacity-70 mb-10 text-center">Ecco come si sente Bubu in questo momento</p>
+
+  {% if mood %}
+  <div class="w-full mt-10 mb-6">
+    <div class="w-full h-6 rounded-full bg-base-300 overflow-hidden">
+      <div
+        class="h-full rounded-full bg-gradient-to-r from-pink-400 to-pink-600 transition-all duration-700"
+        style="width: {{ mood.percentage }}%"
+      ></div>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <p class="text-5xl font-bold text-pink-500">{{ mood.percentage }}%</p>
+    <p class="text-xl mt-1">{{ mood.label }}</p>
+  </div>
+
+  <!-- Il riccio sbuca da dietro il dock -->
+  <div class="fixed inset-x-0 bottom-0 flex justify-center pointer-events-none">
+    <img
+      src="{{ url_for('static', filename='img/' + mood_image) }}"
+      alt="Riccio"
+      class="w-64 sm:w-72 translate-y-[10%] drop-shadow-2xl transition-all duration-700"
+    />
+  </div>
+  {% else %}
+  <p class="opacity-60">Nessuno stato impostato ancora.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

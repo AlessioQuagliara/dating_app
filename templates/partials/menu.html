@@ -1,0 +1,23 @@
+<div class="dock">
+
+  <a href="{{ url_for('home') }}" class="{{ 'dock-active' if request.path == url_for('home') }}">
+    <i class="ri-home-5-{{ 'fill' if request.path == url_for('home') else 'line' }} text-xl"></i>
+    <span class="dock-label">Home</span>
+  </a>
+
+  <a href="{{ url_for('appuntamenti') }}" class="{{ 'dock-active' if request.path == url_for('appuntamenti') }}">
+    <i class="ri-calendar-event-{{ 'fill' if request.path == url_for('appuntamenti') else 'line' }} text-xl"></i>
+    <span class="dock-label">Appuntamenti</span>
+  </a>
+
+  <a href="{{ url_for('stato') }}" class="{{ 'dock-active' if request.path == url_for('stato') }}">
+    <i class="ri-heart-pulse-{{ 'fill' if request.path == url_for('stato') else 'line' }} text-xl"></i>
+    <span class="dock-label">Stato Riccio</span>
+  </a>
+
+  <a href="{{ url_for('controlli') }}" class="{{ 'dock-active' if request.path == url_for('controlli') }}">
+    <i class="ri-settings-3-{{ 'fill' if request.path == url_for('controlli') else 'line' }} text-xl"></i>
+    <span class="dock-label">Controlli</span>
+  </a>
+
+</div>

@@ -1,0 +1,105 @@
+<!--  MODALE PER APPUNTAMENTO  -->
+<dialog id="my_modal_2" class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+        <i class="ri-close-line"></i>
+      </button>
+    </form>
+
+    <h3 class="text-lg font-bold mb-4">Di cosa hai voglia?</h3>
+
+    <ul class="steps w-full mb-6">
+      <li class="step step-primary" data-step-indicator="1">Attività</li>
+      <li class="step" data-step-indicator="2">Data</li>
+      <li class="step" data-step-indicator="3">Conferma</li>
+    </ul>
+
+    <!-- STEP attività -->
+    <div data-step="activity">
+      <div class="grid grid-cols-2 gap-3">
+        {% for a in activities %}
+        <label class="card bg-base-100 border-2 border-base-300 shadow-sm cursor-pointer p-4 items-center text-center relative activity-card">
+          <input
+            type="checkbox"
+            class="checkbox activity-checkbox absolute top-2 right-2"
+            data-slug="{{ a.slug }}"
+            data-name="{{ a.name }}"
+            data-icon="{{ a.icon }}"
+          />
+          <i class="{{ a.icon }} text-5xl text-pink-500"></i>
+          <span class="font-semibold mt-2">{{ a.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- STEP variante (solo per alcune attività) -->
+    <div data-step="variant" class="hidden">
+      {% for a in activities %}
+      {% if a.options %}
+      <div class="wizard-variant-group hidden" data-variant-for="{{ a.slug }}">
+        <p class="text-center mb-3 opacity-70">Cosa ti va?</p>
+        <div class="flex flex-wrap justify-center gap-2">
+          {% for o in a.options %}
+          <button type="button" class="btn btn-outline variant-btn" data-variant="{{ o }}">{{ o }}</button>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- STEP data -->
+    <div data-step="calendar" class="hidden flex-col items-center">
+      <p class="text-center mb-3 opacity-70">Quando ti andrebbe?</p>
+      <div class="flex justify-center">
+        <calendar-date class="cally bg-base-100 border border-base-300 shadow-lg rounded-box" id="wizard-calendar">
+          <svg aria-label="Previous" class="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+          <svg aria-label="Next" class="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+          <calendar-month></calendar-month>
+        </calendar-date>
+      </div>
+    </div>
+
+    <!-- STEP conferma -->
+    <div data-step="confirm" class="hidden">
+      <div class="alert alert-info" id="wizard-summary">Completa i passaggi precedenti</div>
+
+      <div id="wizard-success" data-saved="false" class="hidden mt-4 flex flex-col gap-3 items-center">
+        <p class="text-success font-semibold flex items-center gap-2">
+          <i class="ri-checkbox-circle-fill text-xl"></i> Evento salvato!
+        </p>
+        <a id="wizard-ics-link" class="btn btn-outline btn-sm" download="appuntamento.ics">
+          <i class="ri-download-2-line"></i> Scarica .ics
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigazione wizard -->
+    <div class="modal-action justify-between">
+      <button type="button" id="wizard-back" class="btn btn-ghost invisible">
+        <i class="ri-arrow-left-line"></i> Indietro
+      </button>
+      <div class="flex gap-2">
+        <button type="button" id="wizard-next" class="btn btn-primary" disabled>
+          Avanti <i class="ri-arrow-right-line"></i>
+        </button>
+        <button type="button" id="wizard-confirm" class="btn btn-primary hidden">
+          Conferma e salva <i class="ri-heart-fill"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>Chiudi</button>
+  </form>
+</dialog>
+
+<!-- TOAST DI CONFERMA -->
+<div id="wizard-toast" class="toast toast-top toast-center hidden z-50">
+  <div class="alert alert-success">
+    <i class="ri-heart-3-fill"></i>
+    <span>Appuntamento salvato con Bubu! 🦔</span>
+  </div>
+</div>

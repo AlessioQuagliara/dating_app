@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Bubapp - Home{% endblock %}
+
+{% block content %}
+
+<!--      SCHERMATA HOME      -->
+
+<div class="hero bg-base-100 min-h-dvh">
+  <div class="hero-content flex-col">
+
+    <div class="avatar">
+    <div class="mask mask-heart w-50">
+        <img
+          id="avatar-img"
+          alt="Tailwind-CSS-Avatar-component"
+          src="{{ url_for('static', filename='img/hedgehog.png') }}"
+          data-normal="{{ url_for('static', filename='img/hedgehog.png') }}"
+          data-angry="{{ url_for('static', filename='img/angry_hedgehog.png') }}"
+        />
+    </div>
+    </div>
+
+    <div>
+      <h1 class="text-5xl font-bold">Vuoi uscire con me?</h1>
+      <p class="py-6">
+        Manchi al tuo Bubu, se vuoi uscire premi uno di questi tasti:
+      </p>
+
+        <button class="btn btn-primary" id="btn-si" onclick="my_modal_2.showModal()">Sì</button>
+        <button class="btn btn-error" id="btn-no" style="transition: all 0.2s ease;">No</button>
+
+    </div>
+
+  </div>
+</div>
+
+
+{% include 'partials/modal_nuovo_evento.html' %}
+
+
+<!-- SCRIPT ANTI RIFIUTO     -->
+<script>
+  const btnNo = document.getElementById('btn-no');
+  const avatarImg = document.getElementById('avatar-img');
+
+  let dodgeCount = 0;
+  let angryTimeout = null;
+
+  function scappaVia() {
+    // Calcoliamo lo spazio dello schermo sottraendo le dimensioni del bottone
+    // e quella del dock in basso, per evitare che finisca fuori dalla pagina
+    // o nascosto sotto il menu
+    const dock = document.querySelector('.dock');
+    const dockHeight = dock ? dock.offsetHeight : 0;
+    const maxX = window.innerWidth - btnNo.offsetWidth;
+    const maxY = window.innerHeight - btnNo.offsetHeight - dockHeight;
+
+    // Generiamo coordinate X e Y casuali
+    const randomX = Math.floor(Math.random() * maxX);
+    const randomY = Math.floor(Math.random() * maxY);
+
+    // Cambiamo la posizione del bottone per renderlo libero di muoversi
+    btnNo.style.position = 'fixed';
+    btnNo.style.left = randomX + 'px';
+    btnNo.style.top = randomY + 'px';
+
+    // Al terzo tentativo il riccio si arrabbia per almeno 30 secondi
+    dodgeCount++;
+    if (dodgeCount >= 2) {
+      dodgeCount = 0;
+      mostraRiccioArrabbiato();
+    }
+  }
+
+  function mostraRiccioArrabbiato() {
+    avatarImg.src = avatarImg.dataset.angry;
+    if (angryTimeout) clearTimeout(angryTimeout);
+    angryTimeout = setTimeout(() => {
+      avatarImg.src = avatarImg.dataset.normal;
+      angryTimeout = null;
+    }, 30000);
+  }
+
+  function tentativoRifiuto(e) {
+    // Su mobile non esiste il 'mouseenter': dobbiamo scappare al tocco (touchstart),
+    // prima che scatti il click, altrimenti il dito arriva prima del bottone che scappa.
+    if (e.type === 'touchstart') e.preventDefault();
+    scappaVia();
+  }
+
+  btnNo.addEventListener('mouseenter', tentativoRifiuto);
+  btnNo.addEventListener('touchstart', tentativoRifiuto, { passive: false });
+</script>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='vendor/cally/cally.js') }}"></script>
+<script src="{{ url_for('static', filename='js/wizard.js') }}"></script>
+{% endblock %}

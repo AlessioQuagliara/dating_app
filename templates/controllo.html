@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Bubapp - Controlli{% endblock %}
+
+{% block content %}
+
+<div class="p-6 max-w-md mx-auto flex flex-col items-center justify-center min-h-[80vh]">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="w-full mb-4 flex flex-col gap-2">
+      {% for category, message in messages %}
+      <div class="alert {{ 'alert-success' if category == 'success' else 'alert-error' }}">
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  {% if not authenticated %}
+  <h1 class="text-2xl font-bold mb-6">Accesso Controlli</h1>
+  <form method="post" action="{{ url_for('controlli') }}" class="w-full flex flex-col gap-3">
+    <input type="password" name="password" placeholder="Password" class="input input-bordered w-full" required autofocus />
+    <button type="submit" class="btn btn-primary w-full">
+      <i class="ri-lock-unlock-line"></i> Entra
+    </button>
+  </form>
+  {% else %}
+  <div class="w-full flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Aggiorna stato riccio</h1>
+    <a href="{{ url_for('logout_controlli') }}" class="btn btn-ghost btn-sm" title="Esci">
+      <i class="ri-logout-box-line"></i>
+    </a>
+  </div>
+
+  <form method="post" action="{{ url_for('aggiorna_stato') }}" class="w-full flex flex-col gap-4">
+    <label class="form-control w-full">
+      <span class="label-text mb-1">Percentuale</span>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        name="percentage"
+        id="percentage-range"
+        value="{{ mood.percentage if mood else 50 }}"
+        class="range range-primary"
+      />
+      <span class="block text-center font-bold text-lg mt-1" id="percentage-output">{{ mood.percentage if mood else 50 }}%</span>
+    </label>
+
+    <label class="form-control w-full">
+      <span class="label-text mb-1">Come ti senti?</span>
+      <select name="label" class="select select-bordered w-full" required>
+        <option value="" disabled {{ 'selected' if not mood }}>Scegli uno stato</option>
+        {% for m in moods %}
+        <option value="{{ m.label }}" {{ 'selected' if mood and mood.label == m.label }}>{{ m.label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <button type="submit" class="btn btn-primary w-full mt-2">
+      <i class="ri-save-3-line"></i> Salva
+    </button>
+  </form>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const range = document.getElementById('percentage-range');
+  const output = document.getElementById('percentage-output');
+  if (range && output) {
+    range.addEventListener('input', () => {
+      output.textContent = range.value + '%';
+    });
+  }
+</script>
+{% endblock %}

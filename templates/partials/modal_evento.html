@@ -1,0 +1,29 @@
+<!--  MODALE VISUALIZZAZIONE EVENTO  -->
+<dialog id="event_view_modal" class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+        <i class="ri-close-line"></i>
+      </button>
+    </form>
+
+    <div class="flex flex-col items-center text-center gap-3 py-2">
+      <i id="view-icon" class="ri-calendar-line text-6xl text-pink-500"></i>
+      <h3 id="view-activity" class="text-xl font-bold"></h3>
+      <p id="view-date" class="opacity-70"></p>
+      <div id="view-status-badge"></div>
+    </div>
+
+    <div class="modal-action justify-between mt-6">
+      <button type="button" id="view-delete-btn" class="btn btn-error btn-outline">
+        <i class="ri-delete-bin-line"></i> Elimina
+      </button>
+      <a id="view-ics-link" class="btn btn-outline">
+        <i class="ri-download-2-line"></i> Scarica .ics
+      </a>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>Chiudi</button>
+  </form>
+</dialog>
