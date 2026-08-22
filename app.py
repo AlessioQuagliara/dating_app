@@ -24,11 +24,12 @@ ACTIVITIES = [
 
 MOODS = [
     {"label": "Innamorato", "image": "love_hedgehog.png"},
-    {"label": "Felice", "image": "hedgehog.png"},
+    {"label": "Felice", "image": "happy_hedgehog.png"},
     {"label": "Stanco", "image": "tired_hedgehog.png"},
     {"label": "Annoiato", "image": "tired_hedgehog.png"},
     {"label": "Stressato", "image": "sad_hedgehog.png"},
     {"label": "Arrabbiato", "image": "angry_hedgehog.png"},
+    {"label": "Dolce_Compagnia", "image": "hedgehogs_sweet_company.png"},
 ]
 
 
@@ -164,6 +165,11 @@ def elimina_evento(event_id):
         return jsonify({"error": "Evento non trovato"}), 404
 
     return jsonify({"ok": True})
+
+
+@app.route("/gioco-riccio")
+def gioco_riccio():
+    return render_template("gioco_riccio.html")
 
 
 @app.route("/stato")

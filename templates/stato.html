@@ -22,6 +22,12 @@
     <p class="text-xl mt-1">{{ mood.label }}</p>
   </div>
 
+  {% if mood.label in ['Felice', 'Innamorato'] %}
+  <a href="{{ url_for('gioco_riccio') }}" class="btn btn-primary btn-lg gap-2 mt-8">
+    🦔 Salva la Buba
+  </a>
+  {% endif %}
+
   <!-- Il riccio sbuca da dietro il dock -->
   <div class="fixed inset-x-0 bottom-0 flex justify-center pointer-events-none">
     <img

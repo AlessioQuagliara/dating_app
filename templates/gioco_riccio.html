@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Bubapp - Il Viaggio del Riccio{% endblock %}
+
+{% block body_class %}h-[100dvh] w-screen overflow-hidden bg-neutral{% endblock %}
+{% block nav %}{% endblock %}
+
+{% block head %}
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  #game-container canvas {
+    touch-action: none;
+    display: block;
+  }
+  #touch-controls button {
+    -webkit-tap-highlight-color: transparent;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Config asset: dati separati dalla logica di gioco (in static/js/gioco_riccio.js) -->
+<script>
+  window.HEDGEHOG_GAME_ASSETS = {
+    hedgehog: "{{ url_for('static', filename='img/hedgehog.png') }}",
+    standing: "{{ url_for('static', filename='img/hedgehog_standing.png') }}",
+    walk1: "{{ url_for('static', filename='img/hedgehog_walk_1.png') }}",
+    walk2: "{{ url_for('static', filename='img/hedgehog_walk_2.png') }}",
+    jump: "{{ url_for('static', filename='img/hedgehog_jump.png') }}",
+    female: "{{ url_for('static', filename='img/female_hedgehog.png') }}",
+    happy: "{{ url_for('static', filename='img/happy_hedgehog.png') }}",
+    sad: "{{ url_for('static', filename='img/sad_hedgehog.png') }}",
+    angry: "{{ url_for('static', filename='img/angry_hedgehog.png') }}",
+    tired: "{{ url_for('static', filename='img/tired_hedgehog.png') }}",
+    love: "{{ url_for('static', filename='img/love_hedgehog.png') }}",
+    snail: "{{ url_for('static', filename='img/snail.png') }}",
+    apple: "{{ url_for('static', filename='img/apple.png') }}",
+    background: "{{ url_for('static', filename='img/background_game.png') }}"
+  };
+</script>
+
+<!-- Canvas Phaser: parent a tutta viewport -->
+<div id="game-container" class="fixed inset-0 w-screen h-[100dvh] bg-neutral overflow-hidden"></div>
+
+<!-- HUD overlay: non intercetta il tocco (pointer-events: none), solo il bottone restart è cliccabile -->
+<div
+  class="fixed inset-x-0 z-20 flex items-start justify-between gap-2 px-3 pointer-events-none"
+  style="top: calc(env(safe-area-inset-top, 0px) + 0.5rem);"
+  aria-live="polite"
+  aria-atomic="true"
+>
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="badge badge-warning gap-1 shadow-md">
+      🍎 <span id="hud-apples">0</span>/<span id="hud-apples-total">0</span>
+    </div>
+    <div class="badge badge-error gap-1 shadow-md">❤️ <span id="hud-lives">3</span></div>
+    <div class="badge badge-ghost shadow-md" id="hud-status">Pronto</div>
+  </div>
+  <button
+    id="btn-restart"
+    type="button"
+    class="btn btn-circle btn-sm bg-base-100/60 border-base-300 backdrop-blur pointer-events-auto"
+    style="touch-action:none;"
+    aria-label="Riavvia il livello"
+  >🔄</button>
+</div>
+
+<!-- Toast checkpoint -->
+<div id="toast-checkpoint" class="hidden fixed left-1/2 -translate-x-1/2 z-20 pointer-events-none" style="top: calc(env(safe-area-inset-top, 0px) + 3rem);" role="status">
+  <div class="alert alert-success shadow-lg py-2 px-4 text-sm">🚩 Checkpoint raggiunto!</div>
+</div>
+
+<!-- Controlli touch: overlay fisso in basso, sempre visibile (usabile anche col mouse) -->
+<div
+  id="touch-controls"
+  class="fixed inset-x-0 bottom-0 z-20 flex items-end justify-between px-4 pointer-events-none select-none"
+  style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.25rem);"
+>
+  <div class="flex gap-3 pointer-events-auto" style="touch-action:none;">
+    <button id="btn-left" type="button" class="btn btn-circle btn-lg text-2xl bg-base-100/40 border-base-300 backdrop-blur" aria-label="Sinistra">◀️</button>
+    <button id="btn-right" type="button" class="btn btn-circle btn-lg text-2xl bg-base-100/40 border-base-300 backdrop-blur" aria-label="Destra">▶️</button>
+  </div>
+  <div class="pointer-events-auto" style="touch-action:none;">
+    <button id="btn-jump" type="button" class="btn btn-circle text-3xl bg-primary/60 border-primary backdrop-blur" style="width:5rem;height:5rem;" aria-label="Salta">⬆️</button>
+  </div>
+</div>
+
+<!-- Overlay Game Over -->
+<div id="overlay-gameover" class="hidden fixed inset-0 z-30 items-center justify-center bg-black/70 p-4">
+  <div class="card bg-base-100 shadow-xl w-72 text-center">
+    <div class="card-body items-center">
+      <h2 class="card-title">Game Over 💥</h2>
+      <p>Punteggio: <span id="gameover-score">0</span></p>
+      <button id="btn-retry-gameover" type="button" class="btn btn-primary mt-2">Riprova</button>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay Vittoria -->
+<div id="overlay-victory" class="hidden fixed inset-0 z-30 items-center justify-center bg-black/70 p-4">
+  <div class="card bg-base-100 shadow-xl w-72 text-center">
+    <div class="card-body items-center">
+      <h2 class="card-title justify-center">Hai salvato la Buba! ❤️</h2>
+      <p>Mele raccolte: <span id="victory-apples">0</span>/<span id="victory-apples-total">0</span></p>
+      <p>Vite rimaste: <span id="victory-lives">0</span></p>
+      <button id="btn-retry-victory" type="button" class="btn btn-primary mt-2">Gioca ancora</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+<script src="{{ url_for('static', filename='js/gioco_riccio.js') }}"></script>
+{% endblock %}

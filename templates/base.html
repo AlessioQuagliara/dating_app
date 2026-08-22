@@ -9,11 +9,13 @@
     <link href="{{ url_for('static', filename='vendor/remixicon/remixicon.css') }}" rel="stylesheet">
     {% block head %}{% endblock %}
 </head>
-<body class="pb-20">
+<body class="{% block body_class %}pb-20{% endblock %}">
 
+{% block nav %}
 <!--      MENU TELEFONO      -->
 {% include 'partials/menu.html' %}
 <!--      MENU TELEFONO      -->
+{% endblock %}
 
 {% block content %}{% endblock %}
 
